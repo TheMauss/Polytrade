@@ -19,3 +19,8 @@ fees:
 filters:
   min_volume_usd: 50000
   min_liquidity_usd: 10000
+
+execution:
+  maker_timeout_ms: 15000     # Wait 15s for maker fill, then switch to taker
+  maker_spread_offset: 0.005  # Place maker 0.5¢ below best ask
+  max_slippage: 0.02          # Max 2% slippage on taker fallback

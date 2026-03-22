@@ -32,6 +32,12 @@ export interface Credentials {
   privateKey: string;
 }
 
+export interface ExecutionConfig {
+  makerTimeoutMs: number;   // How long to wait for maker fill before switching to taker
+  makerSpreadOffset: number; // Place maker order this much below best ask (e.g., 0.005 = 0.5¢)
+  maxSlippage: number;       // Max acceptable slippage for taker fallback
+}
+
 export interface Config {
   scanIntervalSeconds: number;
   dryRun: boolean;
@@ -39,6 +45,7 @@ export interface Config {
   risk: RiskConfig;
   fees: FeeConfig;
   filters: FilterConfig;
+  execution: ExecutionConfig;
   credentials: Credentials;
   mongodbUri: string;
   port: number;
@@ -65,6 +72,7 @@ export function loadConfig(configPath = "config.yaml"): Config {
   const risk = data.risk ?? {};
   const fees = data.fees ?? {};
   const filters = data.filters ?? {};
+  const exec = data.execution ?? {};
 
   return {
     scanIntervalSeconds: data.scan_interval_seconds ?? 10,
@@ -87,6 +95,11 @@ export function loadConfig(configPath = "config.yaml"): Config {
     filters: {
       min_volume_usd: filters.min_volume_usd ?? 50_000,
       min_liquidity_usd: filters.min_liquidity_usd ?? 10_000,
+    },
+    execution: {
+      makerTimeoutMs: exec.maker_timeout_ms ?? 15_000,
+      makerSpreadOffset: exec.maker_spread_offset ?? 0.005,
+      maxSlippage: exec.max_slippage ?? 0.02,
     },
     credentials: {
       apiKey: env.POLY_API_KEY ?? "",

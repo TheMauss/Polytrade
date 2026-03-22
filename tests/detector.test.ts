@@ -11,6 +11,7 @@ function makeConfig(overrides: Partial<Config["arbitrage"]> = {}): Config {
     risk: { max_position_usd: 100, max_concurrent_positions: 10, max_daily_loss_usd: 500, bankroll_fraction: 0.05 },
     fees: { maker_pct: 0, taker_pct: 0.02 },
     filters: { min_volume_usd: 0, min_liquidity_usd: 0 },
+    execution: { makerTimeoutMs: 15000, makerSpreadOffset: 0.005, maxSlippage: 0.02 },
     credentials: { apiKey: "", secret: "", passphrase: "", privateKey: "" },
     mongodbUri: "",
     port: 3000,
