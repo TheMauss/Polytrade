@@ -14,7 +14,7 @@ risk:
 
 fees:
   maker_pct: 0.0
-  taker_pct: 0.02
+  taker_pct: 0.0   # Most prediction markets have 0% fees (crypto 15min markets up to 3%)
 
 filters:
   min_volume_usd: 50000

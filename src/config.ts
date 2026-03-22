@@ -90,7 +90,7 @@ export function loadConfig(configPath = "config.yaml"): Config {
     },
     fees: {
       maker_pct: fees.maker_pct ?? 0.0,
-      taker_pct: fees.taker_pct ?? 0.02,
+      taker_pct: fees.taker_pct ?? 0.0,
     },
     filters: {
       min_volume_usd: filters.min_volume_usd ?? 50_000,
