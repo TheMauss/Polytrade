@@ -104,6 +104,32 @@ export class ClobClient {
     return result;
   }
 
+  /** Fetch the fee rate in basis points for a given token. Returns 0 if no fees. */
+  async getFeeRateBps(tokenId: string): Promise<number> {
+    const url = new URL("/fees", this.baseUrl);
+    url.searchParams.set("token_id", tokenId);
+
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) return 0;
+      const data = await resp.json() as any;
+      return Number(data.fee_rate_bps ?? 0);
+    } catch {
+      return 0; // Default to 0 if endpoint unavailable
+    }
+  }
+
+  async getOpenOrders(): Promise<any[]> {
+    const path = "/orders";
+    const authHeaders = this.buildAuthHeaders("GET", path);
+
+    const resp = await fetch(new URL(path, this.baseUrl), {
+      headers: authHeaders,
+    });
+    if (!resp.ok) return [];
+    return (await resp.json()) as any[];
+  }
+
   async cancelOrder(orderId: string): Promise<any> {
     const path = `/order/${orderId}`;
     const authHeaders = this.buildAuthHeaders("DELETE", path);

@@ -1,28 +1,42 @@
-/** Fee calculator for Polymarket trades. */
+/**
+ * Fee calculator for Polymarket trades.
+ *
+ * Fee structure (as of March 2026):
+ * - Most prediction markets: 0% fees
+ * - Crypto markets (15min, 5min, 1H, 4H, daily, weekly): up to 1.56% at 50% prob
+ * - Sports (NCAAB, Serie A): up to 0.44% at 50% prob
+ *
+ * Fees are dynamic — always fetch fee_rate_bps from the CLOB API per token.
+ */
 
 /**
  * Calculate total fee percentage for an arbitrage trade.
  * @param numLegs Number of legs (markets) in the arbitrage.
- * @param feePct Fee percentage per trade (taker fee, e.g., 0.02 = 2%).
+ * @param feePct Fee percentage per trade (e.g., 0.0156 = 1.56%). Default 0 for most markets.
  * @param includeExit Whether to include exit fees.
- * @returns Total fee as a percentage (e.g., 8.0 for 8%).
+ * @returns Total fee as a percentage (e.g., 6.24 for 6.24%).
  */
 export function calculateTotalFees(
   numLegs: number,
-  feePct = 0.02,
+  feePct = 0.0,
   includeExit = true,
 ): number {
-  const multiplier = includeExit ? 2 : 1; // entry + exit
+  const multiplier = includeExit ? 2 : 1;
   return feePct * 100 * numLegs * multiplier;
 }
 
+/** Convert basis points to decimal fee rate. */
+export function bpsToFeeRate(bps: number): number {
+  return bps / 10_000;
+}
+
 /** Net cost per share including entry fee. */
-export function netCostPerShare(price: number, feePct = 0.02): number {
+export function netCostPerShare(price: number, feePct = 0.0): number {
   return price * (1 + feePct);
 }
 
 /** Net proceeds per share after exit fee. */
-export function netProceedsPerShare(price: number, feePct = 0.02): number {
+export function netProceedsPerShare(price: number, feePct = 0.0): number {
   return price * (1 - feePct);
 }
 
@@ -35,7 +49,7 @@ export function netProceedsPerShare(price: number, feePct = 0.02): number {
 export function calculateArbProfit(
   prices: number[],
   investmentPerLeg: number,
-  feePct = 0.02,
+  feePct = 0.0,
 ): { totalCost: number; guaranteedPayout: number; profit: number; roiPct: number } {
   const totalImplied = prices.reduce((a, b) => a + b, 0);
   const numLegs = prices.length;
@@ -44,7 +58,6 @@ export function calculateArbProfit(
   let guaranteedPayout: number;
 
   if (totalImplied > 1.0) {
-    // Overround: buy NO
     const noPrices = prices.map((p) => 1.0 - p);
     totalCost = noPrices
       .filter((p) => p > 0)
@@ -52,7 +65,6 @@ export function calculateArbProfit(
     const minNo = Math.min(...noPrices.filter((p) => p > 0));
     guaranteedPayout = (numLegs - 1) * (investmentPerLeg / minNo);
   } else {
-    // Dutch book: buy YES
     totalCost = prices
       .filter((p) => p > 0)
       .reduce((sum, p) => sum + netCostPerShare(p, feePct) * (investmentPerLeg / p), 0);
