@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polytrade Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Polytrade</h1>
+    <span class="subtitle">Prediction Market Arbitrage Engine</span>
+    <div id="status-badge" class="badge badge-offline">Connecting...</div>
+  </header>
+
+  <!-- Controls -->
+  <section class="controls">
+    <button id="btn-pause" class="btn btn-warning" onclick="control('pause')">Pause</button>
+    <button id="btn-resume" class="btn btn-success" onclick="control('resume')">Resume</button>
+    <button id="btn-kill" class="btn btn-danger" onclick="control('kill')">Kill Switch</button>
+    <button id="btn-unkill" class="btn btn-muted" onclick="control('unkill')">Reactivate</button>
+    <div class="config-inline">
+      <label>Min Edge %
+        <input type="number" id="input-min-edge" value="3.0" step="0.5" min="0">
+      </label>
+      <button class="btn btn-small" onclick="updateConfig()">Apply</button>
+    </div>
+  </section>
+
+  <!-- Metrics -->
+  <section class="metrics-grid">
+    <div class="metric-card">
+      <span class="metric-label">Total PnL</span>
+      <span class="metric-value" id="m-total-pnl">$0.00</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Win Rate</span>
+      <span class="metric-value" id="m-win-rate">0%</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Total Trades</span>
+      <span class="metric-value" id="m-total-trades">0</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Open Positions</span>
+      <span class="metric-value" id="m-open-positions">0</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Daily PnL</span>
+      <span class="metric-value" id="m-daily-pnl">$0.00</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">Avg PnL/Trade</span>
+      <span class="metric-value" id="m-avg-pnl">$0.00</span>
+    </div>
+  </section>
+
+  <!-- Opportunities -->
+  <section>
+    <h2>Recent Arbitrage Opportunities</h2>
+    <div class="table-wrap">
+      <table id="opportunities-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Type</th>
+            <th>Markets</th>
+            <th>Combined</th>
+            <th>Gross Edge</th>
+            <th>Net Edge</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Open Positions -->
+  <section>
+    <h2>Open Positions</h2>
+    <div class="table-wrap">
+      <table id="positions-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Legs</th>
+            <th>Invested</th>
+            <th>PnL</th>
+            <th>Entry Edge</th>
+            <th>Current Edge</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Trade History -->
+  <section>
+    <h2>Trade History</h2>
+    <div class="table-wrap">
+      <table id="trades-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Action</th>
+            <th>Position</th>
+            <th>Type</th>
+            <th>Invested</th>
+            <th>PnL</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span id="last-update">Last update: --</span>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
